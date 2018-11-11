@@ -1,4 +1,5 @@
 import Constants from "../../common/Constants";
+import MathHelper from "../../common/MathHelper";
 import InputService from "../../services/InputService";
 import PlayerKeys from "./PlayerKeys";
 import "./Player.scss";
@@ -29,41 +30,45 @@ export default class Player {
 	}
 
 	update() {
-		let newX = this.x;
-		let newY = this.y;
+		let newPos = { x: this.x, y: this.y };
 
+		this.updateX(newPos);
+		this.updateY(newPos);
+
+		this.x = newPos.x;
+		this.y = newPos.y;
+
+		this.updatePosition();
+	}
+
+	updateX(newPos) {
 		if (InputService.isKeyDown(PlayerKeys.Left)) {
-			newX--;
+			newPos.x--;
 		}
 		if (InputService.isKeyDown(PlayerKeys.Right)) {
-			newX++;
+			newPos.x++;
 		}
 
-		if (newX < this.minX) {
-			newX = this.minX;
-		}
-		if (newX > this.maxX) {
-			newX = this.maxX;
-		}
-		if (this.tilemap[newY][newX]) {
-			newX = this.x;
-		}
+		newPos.x = MathHelper.clamp(newPos.x, this.minX, this.maxX);
 
+		if (this.collides(newPos)) {
+			newPos.x = this.x;
+		}
+	}
+
+	updateY(newPos) {
 		if (InputService.isKeyDown(PlayerKeys.Up) && this.jumpCount < JumpLimit) {
-			newY -= 2;
+			newPos.y -= 2;
 			this.jumpCount++;
 		}
 
-		newY++;
-		let dy = newY - this.y;
-		if (newY < this.minY) {
-			newY = this.minY;
-		}
-		if (newY > this.maxY) {
-			newY = this.maxY;
-		}
-		if (this.tilemap[newY][newX]) {
-			newY = this.y;
+		newPos.y++;
+		let dy = newPos.y - this.y;
+
+		newPos.y = MathHelper.clamp(newPos.y, this.minY, this.maxY);
+
+		if (this.collides(newPos)) {
+			newPos.y = this.y;
 
 			if (dy < 0) {
 				this.jumpCount = JumpLimit;
@@ -71,15 +76,14 @@ export default class Player {
 				this.jumpCount = 0;
 			}
 		}
-
-		this.x = newX;
-		this.y = newY;
-
-		this.updatePosition();
 	}
 
 	updatePosition() {
 		this.domElement.style.left = `${this.x * Constants.CellWidth}px`;
 		this.domElement.style.top = `${this.y * Constants.CellHeight}px`;
+	}
+
+	collides(newPos) {
+		return this.tilemap[newPos.y][newPos.x];
 	}
 }
