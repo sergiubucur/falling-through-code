@@ -3,10 +3,11 @@ import "prismjs/themes/prism-tomorrow.css";
 
 import CodePreprocessor from "./services/CodePreprocessor";
 import CodeHighlighter from "./services/CodeHighlighter";
+import CodeRenderer from "./services/CodeRenderer";
+import CodeTilemapGenerator from "./services/CodeTilemapGenerator";
 import CodeContainer from "./components/code-container/CodeContainer";
 import SampleCode from "./data/SampleCode";
 import "./App.scss";
-import CodeRenderer from "./services/CodeRenderer";
 
 export default class App extends Component {
 	constructor() {
@@ -15,9 +16,11 @@ export default class App extends Component {
 		const code = CodePreprocessor.preprocessCode(SampleCode);
 		const tokens = CodeHighlighter.highlightCode(code);
 		const visibleTokens = CodeRenderer.getVisibleTokens(tokens);
+		const tilemap = CodeTilemapGenerator.generateTilemap(visibleTokens);
 
 		this.state = {
-			tokens: visibleTokens
+			tokens: visibleTokens,
+			tilemap
 		};
 	}
 

@@ -1,13 +1,12 @@
-const MaxLines = 80;
-const MaxLineWidth = 100;
+import Constants from "../common/Constants";
 
 export default class CodePreprocessor {
 	static preprocessCode(code) {
 		code = code
 			.replace(/\t/g, "    ")
 			.split("\n")
-			.slice(0, MaxLines)
-			.map(x => x.slice(0, MaxLineWidth))
+			.slice(0, Constants.MaxLines)
+			.map(x => x.slice(0, Constants.MaxLineWidth))
 			.join("\n");
 
 		let str = "";
