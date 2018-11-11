@@ -7,6 +7,7 @@ import CodeRenderer from "./services/CodeRenderer";
 import CodeTilemapGenerator from "./services/CodeTilemapGenerator";
 import CodeContainer from "./components/code-container/CodeContainer";
 import SampleCode from "./data/SampleCode";
+import Player from "./components/player/Player";
 import "./App.scss";
 
 export default class App extends Component {
@@ -18,34 +19,37 @@ export default class App extends Component {
 		const visibleTokens = CodeRenderer.getVisibleTokens(tokens);
 		const tilemap = CodeTilemapGenerator.generateTilemap(visibleTokens);
 
-		this.state = {
-			tokens: visibleTokens,
-			tilemap
-		};
+		this.tokens = visibleTokens;
+		this.player = new Player(tilemap);
 	}
 
 	componentDidMount() {
-		this.autoScroll();
+		this.player.init();
+
+		this.gameLoop();
 	}
 
-	autoScroll() {
+	gameLoop() {
+		this.update();
+
+		requestAnimationFrame(() => this.gameLoop());
+	}
+
+	update() {
+		this.scroll();
+
+		this.player.update();
+	}
+
+	scroll() {
 		const container = document.querySelector(".code-container");
-
-		const update = () => {
-			container.scrollTop += 1;
-
-			requestAnimationFrame(update);
-		};
-
-		update();
+		container.scrollTop += 1;
 	}
 
 	render() {
-		const { tokens } = this.state;
-
 		return (
 			<div className="app">
-				<CodeContainer tokens={tokens} />
+				<CodeContainer tokens={this.tokens} />
 			</div>
 		);
 	}
