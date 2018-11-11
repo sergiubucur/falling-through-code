@@ -3,7 +3,7 @@ import "prismjs/themes/prism-tomorrow.css";
 
 import CodePreprocessor from "./services/CodePreprocessor";
 import CodeHighlighter from "./services/CodeHighlighter";
-import CodeContainer from "./components/CodeContainer";
+import CodeContainer from "./components/code-container/CodeContainer";
 import SampleCode from "./data/SampleCode";
 import "./App.scss";
 

@@ -14,18 +14,3 @@ body {
 	background: #1E1E1E;
 	height: 100%;
 }
-
-.code-container {
-	width: 1000px;
-	margin: 0 auto;
-	position: relative;
-	overflow: hidden;
-	height: 100%;
-	color: #fff;
-	background: #2d2d2d;
-	user-select: none;
-
-	.token {
-		position: absolute;
-	}
-}

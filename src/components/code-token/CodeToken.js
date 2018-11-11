@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import Constants from "../common/Constants";
+import Constants from "../../common/Constants";
 
 const CodeToken = ({ token, x, y }) => (
 	<div

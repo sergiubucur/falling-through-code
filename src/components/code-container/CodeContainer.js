@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-import CodeToken from "./CodeToken";
+import CodeToken from "../code-token/CodeToken";
+import "./CodeContainer.scss";
 
 export default class CodeContainer extends Component {
 	static propTypes = {
