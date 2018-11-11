@@ -88,6 +88,7 @@ export default class App extends Component {
 			if (char === "\n") {
 				x = 0;
 				y++;
+				continue;
 			}
 
 			const charCode = str.charCodeAt(i);
@@ -106,7 +107,6 @@ export default class App extends Component {
 
 			div.style.left = `${x * CellWidth}px`;
 			div.style.top = `${y * CellHeight}px`;
-			div.title = div.className;
 			div.innerText = char;
 
 			container.appendChild(div);
