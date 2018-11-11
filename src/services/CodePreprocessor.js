@@ -1,4 +1,4 @@
-const MaxLines = 80;
+// const MaxLines = 80;
 const MaxLineWidth = 100;
 
 export default class CodePreprocessor {
@@ -6,7 +6,7 @@ export default class CodePreprocessor {
 		code = code
 			.replace(/\t/g, "    ")
 			.split("\n")
-			.slice(0, MaxLines)
+			// .slice(0, MaxLines)
 			.map(x => x.slice(0, MaxLineWidth))
 			.join("\n");
 
