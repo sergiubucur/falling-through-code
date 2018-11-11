@@ -2,6 +2,7 @@ import Constants from "../../common/Constants";
 import MathHelper from "../../common/MathHelper";
 import InputService from "../../services/InputService";
 import PlayerKeys from "./PlayerKeys";
+import PlayerTrail from "./PlayerTrail";
 import "./Player.scss";
 
 const JumpLimit = 5;
@@ -23,8 +24,11 @@ export default class Player {
 	}
 
 	init() {
+		this.trail = new PlayerTrail(this.x, this.y);
+
 		this.domElement = document.createElement("div");
 		this.domElement.className = "player";
+
 		this.updatePosition();
 
 		const container = document.querySelector(".code-container");
@@ -89,8 +93,13 @@ export default class Player {
 	}
 
 	updatePosition() {
-		this.domElement.style.left = `${this.x * Constants.CellWidth}px`;
-		this.domElement.style.top = `${this.y * Constants.CellHeight}px`;
+		const x = this.x * Constants.CellWidth;
+		const y = this.y * Constants.CellHeight;
+
+		this.domElement.style.left = `${x}px`;
+		this.domElement.style.top = `${y}px`;
+
+		this.trail.updatePosition(x, y);
 	}
 
 	collides(newPos) {
