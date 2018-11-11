@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "prismjs/themes/prism-tomorrow.css";
 
+import Constants from "./common/Constants";
 import CodePreprocessor from "./services/CodePreprocessor";
 import CodeHighlighter from "./services/CodeHighlighter";
 import CodeRenderer from "./services/CodeRenderer";
@@ -16,17 +17,21 @@ export default class App extends Component {
 
 		const code = CodePreprocessor.preprocessCode(SampleCode);
 		const tokens = CodeHighlighter.highlightCode(code);
-		const visibleTokens = CodeRenderer.getVisibleTokens(tokens);
-		const tilemap = CodeTilemapGenerator.generateTilemap(visibleTokens);
 
-		this.tokens = visibleTokens;
-		this.player = new Player(tilemap);
+		this.visibleTokens = CodeRenderer.getVisibleTokens(tokens);
+		this.tilemap = CodeTilemapGenerator.generateTilemap(this.visibleTokens);
 	}
 
 	componentDidMount() {
-		this.player.init();
+		this.player = new Player(this.tilemap);
+		this.reset();
 
 		this.gameLoop();
+	}
+
+	reset() {
+		this.scrollPosition = 0;
+		this.player.reset();
 	}
 
 	gameLoop() {
@@ -37,19 +42,30 @@ export default class App extends Component {
 
 	update() {
 		this.scroll();
-
 		this.player.update();
 	}
 
 	scroll() {
+		if (this.player.y * Constants.CellHeight < this.scrollPosition
+			|| this.player.y * Constants.CellHeight >= this.scrollPosition + window.innerHeight) {
+			this.reset();
+			return;
+		}
+
+		this.setScrollPosition(this.scrollPosition + 1);
+	}
+
+	setScrollPosition(position) {
+		this.scrollPosition = position;
+
 		const container = document.querySelector(".code-container");
-		container.scrollTop += 1;
+		container.scrollTop = this.scrollPosition;
 	}
 
 	render() {
 		return (
 			<div className="app">
-				<CodeContainer tokens={this.tokens} />
+				<CodeContainer tokens={this.visibleTokens} />
 			</div>
 		);
 	}

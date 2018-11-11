@@ -18,6 +18,8 @@ export default class Player {
 		this.minY = 0;
 		this.maxX = tilemap[0].length - 1;
 		this.maxY = tilemap.length - 1;
+
+		this.init();
 	}
 
 	init() {
@@ -27,6 +29,14 @@ export default class Player {
 
 		const container = document.querySelector(".code-container");
 		container.appendChild(this.domElement);
+	}
+
+	reset() {
+		this.x = 0;
+		this.y = 0;
+		this.jumpCount = JumpLimit;
+
+		this.updatePosition();
 	}
 
 	update() {
