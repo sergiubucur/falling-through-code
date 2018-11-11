@@ -6,15 +6,18 @@ import CodeHighlighter from "./services/CodeHighlighter";
 import CodeContainer from "./components/code-container/CodeContainer";
 import SampleCode from "./data/SampleCode";
 import "./App.scss";
+import CodeRenderer from "./services/CodeRenderer";
 
 export default class App extends Component {
 	constructor() {
 		super();
 
 		const code = CodePreprocessor.preprocessCode(SampleCode);
+		const tokens = CodeHighlighter.highlightCode(code);
+		const visibleTokens = CodeRenderer.getVisibleTokens(tokens);
 
 		this.state = {
-			tokens: CodeHighlighter.highlightCode(code)
+			tokens: visibleTokens
 		};
 	}
 
