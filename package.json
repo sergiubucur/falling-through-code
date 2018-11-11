@@ -2,6 +2,7 @@
   "name": "falling-through-code",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://sergiubucur.github.io/falling-through-code",
   "dependencies": {
     "node-sass": "^4.10.0",
     "prismjs": "^1.15.0",
