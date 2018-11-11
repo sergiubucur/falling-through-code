@@ -3,6 +3,7 @@ export default `
 var electronRemote = require("remote");
 // @endif
 
+
 GS.GameVersion = "v1.2.2";
 GS.ReleaseDate = "april 2017";
 

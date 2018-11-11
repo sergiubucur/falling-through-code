@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "highlight.js": "^9.13.1",
     "node-sass": "^4.10.0",
+    "prismjs": "^1.15.0",
     "react": "^16.6.1",
     "react-dom": "^16.6.1",
     "react-scripts": "2.1.1"

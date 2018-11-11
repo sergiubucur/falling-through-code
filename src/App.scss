@@ -2,7 +2,7 @@
 	box-sizing: border-box;
 }
 
-html {
+html, #root, .app {
 	height: 100%;
 }
 
@@ -10,32 +10,22 @@ body {
 	margin: 0;
 	padding: 0;
 	font-size: 18px;
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: monospace;
 	background: #1E1E1E;
-	height: 100%;
-}
-
-#root {
-	height: 100%;
-}
-
-.app {
 	height: 100%;
 }
 
 .code-container {
 	width: 1000px;
 	margin: 0 auto;
+	position: relative;
+	overflow: hidden;
 	height: 100%;
+	color: #fff;
+	background: #2d2d2d;
+	user-select: none;
 
-	pre {
-		white-space: pre-wrap;
-		margin: 0;
-		height: 100%;
-
-		code {
-			overflow: hidden;
-			height: 100%;
-		}
+	.token {
+		position: absolute;
 	}
 }
