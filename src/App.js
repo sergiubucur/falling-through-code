@@ -20,6 +20,8 @@ export default class App extends Component {
 
 		this.visibleTokens = CodeRenderer.getVisibleTokens(tokens);
 		this.tilemap = CodeTilemapGenerator.generateTilemap(this.visibleTokens);
+
+		this.scrollSpeed = 1;
 	}
 
 	componentDidMount() {
@@ -46,13 +48,21 @@ export default class App extends Component {
 	}
 
 	scroll() {
-		if (this.player.y * Constants.CellHeight < this.scrollPosition
-			|| this.player.y * Constants.CellHeight >= this.scrollPosition + window.innerHeight) {
+		const mapEnd = this.tilemap.length * Constants.CellHeight - window.innerHeight;
+
+		if (this.scrollPosition > mapEnd) {
+			return;
+		}
+
+		const playerY = this.player.y * Constants.CellHeight;
+		const screenEnd = this.scrollPosition + window.innerHeight;
+
+		if (playerY < this.scrollPosition || playerY >= screenEnd) {
 			this.reset();
 			return;
 		}
 
-		this.setScrollPosition(this.scrollPosition + 1);
+		this.setScrollPosition(this.scrollPosition + this.scrollSpeed);
 	}
 
 	setScrollPosition(position) {
