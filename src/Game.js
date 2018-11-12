@@ -124,7 +124,7 @@ export default class Game {
 	}
 
 	drawTokens() {
-		const now = new Date();
+		// const now = new Date();
 
 		const tokensContainer = document.querySelector(".tokens-container");
 
@@ -141,6 +141,6 @@ export default class Game {
 
 		tokensContainer.innerHTML = str;
 
-		console.log(new Date() - now);
+		// console.log(new Date() - now);
 	}
 }
