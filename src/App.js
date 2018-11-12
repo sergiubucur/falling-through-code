@@ -3,6 +3,7 @@ import "prismjs/themes/prism-tomorrow.css";
 
 import Constants from "./common/Constants";
 import CodePreprocessor from "./services/CodePreprocessor";
+import CodeIterator from "./services/CodeIterator";
 import CodeHighlighter from "./services/CodeHighlighter";
 import CodeRenderer from "./services/CodeRenderer";
 import CodeTilemapGenerator from "./services/CodeTilemapGenerator";
@@ -15,13 +16,14 @@ export default class App extends Component {
 	constructor() {
 		super();
 
-		const code = CodePreprocessor.preprocessCode(SampleCode);
-		const tokens = CodeHighlighter.highlightCode(code);
+		const codeLines = CodePreprocessor.preprocessCode(SampleCode);
+		this.codeIterator = new CodeIterator(codeLines);
+
+		const codeChunk = this.codeIterator.getNextChunk();
+		const tokens = CodeHighlighter.highlightCode(codeChunk);
 
 		this.visibleTokens = CodeRenderer.getVisibleTokens(tokens);
 		this.tilemap = CodeTilemapGenerator.generateTilemap(this.visibleTokens);
-
-		this.scrollSpeed = 1;
 	}
 
 	componentDidMount() {
@@ -33,6 +35,8 @@ export default class App extends Component {
 
 	reset() {
 		this.scrollPosition = 0;
+		this.scrollSpeed = 1;
+
 		this.player.reset();
 	}
 
