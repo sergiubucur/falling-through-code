@@ -1,3 +1,5 @@
+import "react-app-polyfill/ie11";
+
 import Game from "./Game";
 
 const game = new Game();
