@@ -9,7 +9,6 @@ import CodeHighlighter from "./services/CodeHighlighter";
 import CodeRenderer from "./services/CodeRenderer";
 import CodeTilemapGenerator from "./services/CodeTilemapGenerator";
 import Layout from "./components/layout/Layout";
-import CodeTokenList from "./components/code-token-list/CodeTokenList";
 import SampleCode from "./data/SampleCode";
 import Player from "./components/player/Player";
 import "./Game.scss";
@@ -25,7 +24,7 @@ export default class Game {
 
 	start() {
 		this.scrollPosition = 0;
-		this.scrollSpeed = 1;
+		this.scrollSpeed = 2;
 
 		this.dispose();
 		this.generateInitialTilemap();
@@ -81,14 +80,13 @@ export default class Game {
 			return;
 		}
 
-		console.log("integrating next code chunk");
-
 		const codeChunk = this.codeIterator.getNextChunk();
 		const tokens = CodeHighlighter.highlightCode(codeChunk);
 
 		const visibleTokens = CodeRenderer.getVisibleTokens(tokens, this.tilemap.length, this.tilemap.length * Constants.MaxLineWidth);
 		const tilemap = CodeTilemapGenerator.generateTilemap(visibleTokens, this.tilemap.length);
 
+		this.visibleTokens = this.visibleTokens.filter(item => item.y * Constants.CellHeight >= this.scrollPosition);
 		this.visibleTokens.push(...visibleTokens);
 		this.tilemap.push(...tilemap);
 
@@ -126,9 +124,23 @@ export default class Game {
 	}
 
 	drawTokens() {
-		const container = document.querySelector(".tokens-container");
+		const now = new Date();
 
-		ReactDOM.unmountComponentAtNode(container);
-		ReactDOM.render(<CodeTokenList tokens={this.visibleTokens} />, container);
+		const tokensContainer = document.querySelector(".tokens-container");
+
+		let str = "";
+		this.visibleTokens.forEach((item) => {
+			str += `
+				<div
+					class="token ${item.token.type || ''}"
+					style="left: ${item.x * Constants.CellWidth}px; top: ${item.y * Constants.CellHeight}px">
+					${item.token.char}
+				</div>
+			`;
+		});
+
+		tokensContainer.innerHTML = str;
+
+		console.log(new Date() - now);
 	}
 }
