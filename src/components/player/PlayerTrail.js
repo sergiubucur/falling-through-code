@@ -39,4 +39,12 @@ export default class PlayerTrail {
 			x.style.opacity = (TrailLength - i) / (TrailLength * 3);
 		});
 	}
+
+	dispose() {
+		const container = document.querySelector(".code-container");
+
+		Array.from(container.querySelectorAll(".player.trail")).forEach((x) => {
+			container.removeChild(x);
+		});
+	}
 }

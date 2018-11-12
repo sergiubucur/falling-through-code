@@ -35,6 +35,14 @@ export default class Player {
 		container.appendChild(this.domElement);
 	}
 
+	dispose() {
+		const container = document.querySelector(".code-container");
+		container.removeChild(this.domElement);
+
+		this.trail.dispose();
+		this.trail = null;
+	}
+
 	reset() {
 		this.x = 0;
 		this.y = 0;
