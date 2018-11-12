@@ -24,13 +24,15 @@ export default class Game {
 	}
 
 	start() {
+		this.scrollPosition = 0;
+		this.scrollSpeed = 1;
+
 		this.dispose();
 		this.generateInitialTilemap();
 
 		this.player = new Player(this.tilemap);
 
 		this.drawTokens();
-		this.reset();
 		this.gameLoop();
 	}
 
@@ -42,18 +44,18 @@ export default class Game {
 
 		if (this.animationFrameId) {
 			cancelAnimationFrame(this.animationFrameId);
+			this.animationFrameId = null;
 		}
-	}
-
-	reset() {
-		this.scrollPosition = 0;
-		this.scrollSpeed = 1;
-
-		this.player.reset();
 	}
 
 	gameLoop() {
 		this.update();
+
+		if (this.restartOnNextFrame) {
+			this.restartOnNextFrame = false;
+			this.start();
+			return;
+		}
 
 		this.animationFrameId = requestAnimationFrame(() => this.gameLoop());
 	}
@@ -74,6 +76,26 @@ export default class Game {
 		this.tilemap = CodeTilemapGenerator.generateTilemap(this.visibleTokens);
 	}
 
+	integrateNextCodeChunk() {
+		if (!this.codeIterator.nextChunkExists()) {
+			return;
+		}
+
+		console.log("integrating next code chunk");
+
+		const codeChunk = this.codeIterator.getNextChunk();
+		const tokens = CodeHighlighter.highlightCode(codeChunk);
+
+		const visibleTokens = CodeRenderer.getVisibleTokens(tokens, this.tilemap.length, this.tilemap.length * Constants.MaxLineWidth);
+		const tilemap = CodeTilemapGenerator.generateTilemap(visibleTokens, this.tilemap.length);
+
+		this.visibleTokens.push(...visibleTokens);
+		this.tilemap.push(...tilemap);
+
+		this.player.setTilemap(this.tilemap);
+		this.drawTokens();
+	}
+
 	scroll() {
 		const mapEnd = this.tilemap.length * Constants.CellHeight - window.innerHeight;
 
@@ -81,11 +103,15 @@ export default class Game {
 			return;
 		}
 
+		if (mapEnd - this.scrollPosition < window.innerHeight) {
+			this.integrateNextCodeChunk();
+		}
+
 		const playerY = this.player.y * Constants.CellHeight;
 		const screenEnd = this.scrollPosition + window.innerHeight;
 
 		if (playerY < this.scrollPosition || playerY >= screenEnd) {
-			this.reset();
+			this.restartOnNextFrame = true;
 			return;
 		}
 

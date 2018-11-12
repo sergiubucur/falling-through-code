@@ -10,16 +10,10 @@ const JumpLimit = 5;
 export default class Player {
 	x = 0;
 	y = 0;
-	jumpCount = 0;
+	jumpCount = JumpLimit;
 
 	constructor(tilemap) {
-		this.tilemap = tilemap;
-
-		this.minX = 0;
-		this.minY = 0;
-		this.maxX = tilemap[0].length - 1;
-		this.maxY = tilemap.length - 1;
-
+		this.setTilemap(tilemap);
 		this.init();
 	}
 
@@ -43,12 +37,13 @@ export default class Player {
 		this.trail = null;
 	}
 
-	reset() {
-		this.x = 0;
-		this.y = 0;
-		this.jumpCount = JumpLimit;
+	setTilemap(tilemap) {
+		this.tilemap = tilemap;
 
-		this.updatePosition();
+		this.minX = 0;
+		this.minY = 0;
+		this.maxX = tilemap[0].length - 1;
+		this.maxY = tilemap.length - 1;
 	}
 
 	update() {

@@ -1,9 +1,9 @@
 export default class CodeRenderer {
-	static getVisibleTokens(tokens) {
+	static getVisibleTokens(tokens, startY = 0, idOffset = 0) {
 		const tokenList = [];
 
 		let x = 0;
-		let y = 0;
+		let y = startY;
 
 		for (let i = 0; i < tokens.length; i++) {
 			const token = tokens[i];
@@ -21,7 +21,7 @@ export default class CodeRenderer {
 			}
 
 			tokenList.push({
-				id: i,
+				id: idOffset + i,
 				token,
 				x,
 				y

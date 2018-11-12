@@ -1,12 +1,17 @@
 import Constants from "../common/Constants";
 
 export default class CodeTilemapGenerator {
-	static generateTilemap(visibleTokens) {
-		const sizeY = visibleTokens.reduce((max, token) => token.y > max ? token.y : max, 0) + 1;
+	static generateTilemap(visibleTokens, startY = 0) {
+		const sizeY = visibleTokens.reduce((max, token) => {
+			const y = token.y - startY;
+
+			return y > max ? y : max;
+		}, 0) + 1;
+
 		const map = this.getEmptyTilemap(Constants.MaxLineWidth, sizeY);
 
 		visibleTokens.forEach(token => {
-			map[token.y][token.x] = 1;
+			map[token.y - startY][token.x] = 1;
 		});
 
 		return map;
