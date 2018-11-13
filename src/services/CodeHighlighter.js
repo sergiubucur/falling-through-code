@@ -1,8 +1,8 @@
 import Prism from "prismjs";
 
 export default class CodeHighlighter {
-	static highlightCode(code) {
-		const tokens = Prism.tokenize(code, Prism.languages.js);
+	static highlightCode(code, language) {
+		const tokens = Prism.tokenize(code, Prism.languages[language]);
 		const processedTokens = [];
 
 		const processToken = (token) => {

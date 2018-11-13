@@ -10,17 +10,15 @@ import CodeHighlighter from "./services/CodeHighlighter";
 import CodeRenderer from "./services/CodeRenderer";
 import CodeTilemapGenerator from "./services/CodeTilemapGenerator";
 import Layout from "./components/layout/Layout";
-import SampleCode from "./data/SampleCode";
 import Player from "./components/player/Player";
 import "./Game.scss";
 
 export default class Game {
-	load() {
-		return new Promise((resolve, reject) => {
-			ReactDOM.render(<Layout/>, document.getElementById("root"));
+	init(code, language) {
+		this.code = code;
+		this.language = language;
 
-			resolve();
-		});
+		ReactDOM.render(<Layout/>, document.getElementById("root"));
 	}
 
 	start() {
@@ -69,11 +67,11 @@ export default class Game {
 	}
 
 	generateInitialTilemap() {
-		const codeLines = CodePreprocessor.preprocessCode(SampleCode);
+		const codeLines = CodePreprocessor.preprocessCode(this.code);
 		this.codeIterator = new CodeIterator(codeLines);
 
 		const codeChunk = this.codeIterator.getNextChunk();
-		const tokens = CodeHighlighter.highlightCode(codeChunk);
+		const tokens = CodeHighlighter.highlightCode(codeChunk, this.language);
 
 		this.visibleTokens = CodeRenderer.getVisibleTokens(tokens);
 		this.tilemap = CodeTilemapGenerator.generateTilemap(this.visibleTokens);
@@ -85,7 +83,7 @@ export default class Game {
 		}
 
 		const codeChunk = this.codeIterator.getNextChunk();
-		const tokens = CodeHighlighter.highlightCode(codeChunk);
+		const tokens = CodeHighlighter.highlightCode(codeChunk, this.language);
 
 		const visibleTokens = CodeRenderer.getVisibleTokens(tokens, this.tilemap.length, this.tilemap.length * Constants.MaxLineWidth);
 		const tilemap = CodeTilemapGenerator.generateTilemap(visibleTokens, this.tilemap.length);

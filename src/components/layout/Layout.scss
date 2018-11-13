@@ -9,6 +9,10 @@
 		background: #2d2d2d;
 		user-select: none;
 
+		@media screen and (max-width: 1440px) {
+			margin: 0 32px;
+		}
+
 		.tokens-container {
 			.token {
 				position: absolute;

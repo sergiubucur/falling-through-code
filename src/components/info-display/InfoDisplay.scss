@@ -11,4 +11,14 @@
 		font-size: 24px;
 		vertical-align: middle;
 	}
+
+	.action:hover {
+		text-decoration: underline;
+		cursor: pointer;
+	}
+
+	.credits {
+		font-size: 14px;
+		color: #888888;
+	}
 }
