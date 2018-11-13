@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import "prismjs/themes/prism-tomorrow.css";
 
 import Constants from "./common/Constants";
+import EventBus from "./services/EventBus";
 import CodePreprocessor from "./services/CodePreprocessor";
 import CodeIterator from "./services/CodeIterator";
 import CodeHighlighter from "./services/CodeHighlighter";
@@ -25,6 +26,7 @@ export default class Game {
 	start() {
 		this.scrollPosition = 0;
 		this.scrollSpeed = 2;
+		EventBus.events.dispatch("score-update", { reset: true });
 
 		this.dispose();
 		this.generateInitialTilemap();
@@ -62,6 +64,8 @@ export default class Game {
 	update() {
 		this.scroll();
 		this.player.update();
+
+		EventBus.events.dispatch("score-update", { score: this.player.y });
 	}
 
 	generateInitialTilemap() {

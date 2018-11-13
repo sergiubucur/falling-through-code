@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 
+import ScoreDisplay from "../score-display/ScoreDisplay";
 import "./Layout.scss";
 
 export default class Layout extends Component {
@@ -10,6 +11,8 @@ export default class Layout extends Component {
 					<div className="tokens-container">
 					</div>
 				</div>
+
+				<ScoreDisplay />
 			</div>
 		);
 	}
