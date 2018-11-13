@@ -12,23 +12,14 @@ export default class PlayerTrail {
 	}
 
 	init() {
-		const container = document.querySelector(".code-container");
-
 		this.segments = [];
-
-		for (let i = 1; i < TrailLength; i++) {
-			const segment = document.createElement("div");
-			segment.className = "player trail";
-			segment.style.left = `${this.x}px`;
-			segment.style.top = `${this.y}px`;
-			segment.style.opacity = 0;
-
-			this.segments.push(segment);
-			container.appendChild(segment);
-		}
 	}
 
 	updatePosition(x, y) {
+		if (this.segments.length < TrailLength) {
+			this.addSegment();
+		}
+
 		const segment = this.segments.pop();
 
 		segment.style.left = `${x}px`;
@@ -38,6 +29,20 @@ export default class PlayerTrail {
 		this.segments.forEach((x, i) => {
 			x.style.opacity = (TrailLength - i) / (TrailLength * 3);
 		});
+	}
+
+	addSegment() {
+		const segment = document.createElement("div");
+
+		segment.className = "player trail";
+		segment.style.left = `${this.x}px`;
+		segment.style.top = `${this.y}px`;
+		segment.style.opacity = 0;
+
+		this.segments.push(segment);
+
+		const container = document.querySelector(".code-container");
+		container.appendChild(segment);
 	}
 
 	dispose() {

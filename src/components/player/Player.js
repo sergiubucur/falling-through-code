@@ -8,7 +8,7 @@ import "./Player.scss";
 const JumpLimit = 5;
 
 export default class Player {
-	x = 0;
+	x = 13;
 	y = 0;
 	jumpCount = JumpLimit;
 
