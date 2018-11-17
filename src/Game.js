@@ -39,6 +39,8 @@ export default class Game {
 			this.animationFrameId = null;
 		}
 
+		this.restartOnNextFrame = false;
+		this.endReached = false;
 		this.scrollPosition = 0;
 		this.scrollSpeed = 2;
 		this.lineIndex = 0;
@@ -52,7 +54,6 @@ export default class Game {
 		this.update();
 
 		if (this.restartOnNextFrame) {
-			this.restartOnNextFrame = false;
 			this.start();
 			return;
 		}
@@ -92,6 +93,7 @@ export default class Game {
 
 	integrateNextCodeLine() {
 		if (this.lineIndex + 1 >= this.codeLines.length) {
+			this.endReached = true;
 			return;
 		}
 
@@ -108,13 +110,9 @@ export default class Game {
 	}
 
 	scroll() {
-		const mapEnd = this.tilemap.lines.length * Constants.CellHeight - window.innerHeight;
+		const mapEnd = this.tilemap.lines.length * Constants.CellHeight;
 
-		if (this.scrollPosition >= mapEnd) {
-			return;
-		}
-
-		if (mapEnd - this.scrollPosition < window.innerHeight) {
+		if (mapEnd - Constants.CellHeight - this.scrollPosition < window.innerHeight) {
 			this.integrateNextCodeLine();
 		}
 
@@ -126,14 +124,12 @@ export default class Game {
 			return;
 		}
 
-		this.setScrollPosition(this.scrollPosition + this.scrollSpeed);
-	}
+		if (!this.endReached || this.scrollPosition + this.scrollSpeed < mapEnd - window.innerHeight) {
+			this.scrollPosition += this.scrollSpeed;
 
-	setScrollPosition(position) {
-		this.scrollPosition = position;
-
-		const container = document.querySelector(".code-container");
-		container.scrollTop = this.scrollPosition;
+			const container = document.querySelector(".code-container");
+			container.scrollTop = this.scrollPosition;
+		}
 	}
 
 	removeTopLineIfHidden() {
