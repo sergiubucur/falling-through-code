@@ -20,11 +20,11 @@ export default class CodeFilePicker extends Component {
 	}
 
 	componentDidMount() {
-		this.listener = EventBus.events.addListener("code-file-picker-update", this.handleUpdate);
+		this.listener = EventBus.events.addListener(EventBus.channels.CodeFilePicker, this.handleUpdate);
 	}
 
 	componentWillUnmount() {
-		EventBus.events.removeListener("code-file-picker-update", this.listener);
+		EventBus.events.removeListener(EventBus.channels.CodeFilePicker, this.listener);
 	}
 
 	getLanguages() {

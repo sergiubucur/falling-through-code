@@ -10,11 +10,11 @@ export default class ScoreDisplay extends Component {
 	}
 
 	componentDidMount() {
-		this.listener = EventBus.events.addListener("score-update", this.handleScoreUpdate);
+		this.listener = EventBus.events.addListener(EventBus.channels.Score, this.handleScoreUpdate);
 	}
 
 	componentWillUnmount() {
-		EventBus.events.removeListener("score-update", this.listener);
+		EventBus.events.removeListener(EventBus.channels.Score, this.listener);
 	}
 
 	handleScoreUpdate = (data) => {

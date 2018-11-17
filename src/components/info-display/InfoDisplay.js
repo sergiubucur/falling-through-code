@@ -5,7 +5,7 @@ import "./InfoDisplay.scss";
 
 export default class InfoDisplay extends Component {
 	handleOpenClick = () => {
-		EventBus.events.dispatch("code-file-picker-update", { open: true });
+		EventBus.events.dispatch(EventBus.channels.CodeFilePicker, { open: true });
 	}
 
 	handleSampleClick = () => {

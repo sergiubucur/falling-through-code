@@ -27,7 +27,7 @@ export default class Game {
 	}
 
 	dispose() {
-		EventBus.events.dispatch("score-update", { reset: true });
+		EventBus.events.dispatch(EventBus.channels.Score, { reset: true });
 
 		if (this.player) {
 			this.player.dispose();
@@ -64,7 +64,7 @@ export default class Game {
 		this.scroll();
 		this.player.update();
 
-		EventBus.events.dispatch("score-update", { score: this.player.y });
+		EventBus.events.dispatch(EventBus.channels.Score, { score: this.player.y });
 	}
 
 	initialize() {
@@ -110,8 +110,12 @@ export default class Game {
 	scroll() {
 		const mapEnd = this.tilemap.lines.length * Constants.CellHeight - window.innerHeight;
 
-		if (this.scrollPosition > mapEnd) {
+		if (this.scrollPosition >= mapEnd) {
 			return;
+		}
+
+		if (mapEnd - this.scrollPosition < window.innerHeight) {
+			this.integrateNextCodeLine();
 		}
 
 		const playerY = this.player.y * Constants.CellHeight;
@@ -120,10 +124,6 @@ export default class Game {
 		if (playerY < this.scrollPosition || playerY >= screenEnd) {
 			this.restartOnNextFrame = true;
 			return;
-		}
-
-		if (mapEnd - this.scrollPosition < window.innerHeight) {
-			this.integrateNextCodeLine();
 		}
 
 		this.setScrollPosition(this.scrollPosition + this.scrollSpeed);
@@ -159,6 +159,14 @@ export default class Game {
 			`;
 		});
 
+		if (str.length === 0) {
+			str += `
+				<div class="token" style="left: 0; top: ${lineIndex * Constants.CellHeight}px">
+					&nbsp;
+				</div>
+			`;
+		}
+
 		const tokenLine = document.createElement("div");
 		tokenLine.className = "token-line";
 		tokenLine.innerHTML = str;
@@ -166,5 +174,13 @@ export default class Game {
 
 		const tokensContainer = document.querySelector(".tokens-container");
 		tokensContainer.appendChild(tokenLine);
+
+		this.addDebugValues();
+	}
+
+	addDebugValues() {
+		window.debugValue("lines per screen", Math.ceil(window.innerHeight / Constants.CellHeight));
+		window.debugValue("token lines", document.querySelectorAll(".token-line").length);
+		window.debugValue("tokens", document.querySelectorAll(".token").length);
 	}
 }

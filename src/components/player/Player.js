@@ -3,7 +3,9 @@ import MathHelper from "../../common/MathHelper";
 import InputService from "../../services/InputService";
 import PlayerKeys from "./PlayerKeys";
 import PlayerTrail from "./PlayerTrail";
+import EventBus from "../../services/EventBus";
 import "./Player.scss";
+
 
 const JumpLimit = 5;
 
@@ -11,6 +13,7 @@ export default class Player {
 	x = 13;
 	y = 0;
 	jumpCount = JumpLimit;
+	pressed = false;
 
 	constructor(tilemap) {
 		this.tilemap = tilemap;
@@ -43,10 +46,12 @@ export default class Player {
 		this.minX = 0;
 		this.minY = 0;
 		this.maxX = Constants.MaxLineWidth - 1;
-		this.maxY = this.tilemap.lines.length - 2;
+		this.maxY = this.tilemap.lines.length - 1;
 	}
 
 	update() {
+		this.updateDebugDisplay();
+
 		let newPos = { x: this.x, y: this.y };
 
 		this.updateX(newPos);
@@ -56,6 +61,15 @@ export default class Player {
 		this.y = newPos.y;
 
 		this.updatePosition();
+	}
+
+	updateDebugDisplay() {
+		if (InputService.isKeyDown(PlayerKeys.DebugMode) && !this.pressed) {
+			EventBus.events.dispatch(EventBus.channels.DebugDisplay, { toggleVisibility: true });
+			this.pressed = true;
+		}
+
+		this.pressed = InputService.isKeyDown(PlayerKeys.DebugMode);
 	}
 
 	updateX(newPos) {
