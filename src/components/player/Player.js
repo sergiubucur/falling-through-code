@@ -13,7 +13,9 @@ export default class Player {
 	jumpCount = JumpLimit;
 
 	constructor(tilemap) {
-		this.setTilemap(tilemap);
+		this.tilemap = tilemap;
+
+		this.updateTilemap();
 		this.init();
 	}
 
@@ -37,13 +39,11 @@ export default class Player {
 		this.trail = null;
 	}
 
-	setTilemap(tilemap) {
-		this.tilemap = tilemap;
-
+	updateTilemap() {
 		this.minX = 0;
 		this.minY = 0;
-		this.maxX = tilemap[0].length - 1;
-		this.maxY = tilemap.length - 1;
+		this.maxX = Constants.MaxLineWidth - 1;
+		this.maxY = this.tilemap.lines.length - 2;
 	}
 
 	update() {
@@ -106,6 +106,6 @@ export default class Player {
 	}
 
 	collides(newPos) {
-		return this.tilemap[newPos.y][newPos.x];
+		return this.tilemap.lines[newPos.y][newPos.x];
 	}
 }

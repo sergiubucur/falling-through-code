@@ -5,10 +5,9 @@ import "prismjs/themes/prism-tomorrow.css";
 import Constants from "./common/Constants";
 import EventBus from "./services/EventBus";
 import CodePreprocessor from "./services/CodePreprocessor";
-import CodeIterator from "./services/CodeIterator";
 import CodeHighlighter from "./services/CodeHighlighter";
 import CodeRenderer from "./services/CodeRenderer";
-import CodeTilemapGenerator from "./services/CodeTilemapGenerator";
+import CodeTilemap from "./services/CodeTilemap";
 import Layout from "./components/layout/Layout";
 import Player from "./components/player/Player";
 import "./Game.scss";
@@ -22,20 +21,14 @@ export default class Game {
 	}
 
 	start() {
-		this.scrollPosition = 0;
-		this.scrollSpeed = 2;
-		EventBus.events.dispatch("score-update", { reset: true });
-
 		this.dispose();
-		this.generateInitialTilemap();
-
-		this.player = new Player(this.tilemap);
-
-		this.drawTokens();
+		this.initialize();
 		this.gameLoop();
 	}
 
 	dispose() {
+		EventBus.events.dispatch("score-update", { reset: true });
+
 		if (this.player) {
 			this.player.dispose();
 			this.player = null;
@@ -45,6 +38,14 @@ export default class Game {
 			cancelAnimationFrame(this.animationFrameId);
 			this.animationFrameId = null;
 		}
+
+		this.scrollPosition = 0;
+		this.scrollSpeed = 2;
+		this.lineIndex = 0;
+		this.codeLines = null;
+		this.tilemap = null;
+
+		document.querySelector(".tokens-container").innerHTML = "";
 	}
 
 	gameLoop() {
@@ -66,45 +67,51 @@ export default class Game {
 		EventBus.events.dispatch("score-update", { score: this.player.y });
 	}
 
-	generateInitialTilemap() {
-		const codeLines = CodePreprocessor.preprocessCode(this.code);
-		this.codeIterator = new CodeIterator(codeLines);
+	initialize() {
+		this.codeLines = CodePreprocessor.preprocessCode(this.code);
+		this.tilemap = new CodeTilemap();
 
-		const codeChunk = this.codeIterator.getNextChunk();
-		const tokens = CodeHighlighter.highlightCode(codeChunk, this.language);
+		const initialLineCount = Math.ceil(window.innerHeight / Constants.CellHeight) + 1;
 
-		this.visibleTokens = CodeRenderer.getVisibleTokens(tokens);
-		this.tilemap = CodeTilemapGenerator.generateTilemap(this.visibleTokens);
+		for (let i = 0; i < initialLineCount; i++) {
+			if (i >= this.codeLines.length) {
+				break;
+			}
+
+			this.lineIndex = i;
+
+			const tokens = CodeHighlighter.highlightCode(this.codeLines[this.lineIndex], this.language);
+			const visibleTokens = CodeRenderer.getVisibleTokens(tokens, this.lineIndex, this.lineIndex * Constants.MaxLineWidth);
+
+			this.tilemap.addLine(visibleTokens);
+			this.drawTokenLine(visibleTokens, this.lineIndex);
+		}
+
+		this.player = new Player(this.tilemap);
 	}
 
-	integrateNextCodeChunk() {
-		if (!this.codeIterator.nextChunkExists()) {
+	integrateNextCodeLine() {
+		if (this.lineIndex + 1 >= this.codeLines.length) {
 			return;
 		}
 
-		const codeChunk = this.codeIterator.getNextChunk();
-		const tokens = CodeHighlighter.highlightCode(codeChunk, this.language);
+		this.lineIndex++;
 
-		const visibleTokens = CodeRenderer.getVisibleTokens(tokens, this.tilemap.length, this.tilemap.length * Constants.MaxLineWidth);
-		const tilemap = CodeTilemapGenerator.generateTilemap(visibleTokens, this.tilemap.length);
+		const tokens = CodeHighlighter.highlightCode(this.codeLines[this.lineIndex], this.language);
+		const visibleTokens = CodeRenderer.getVisibleTokens(tokens, this.lineIndex, this.lineIndex * Constants.MaxLineWidth);
 
-		this.visibleTokens = this.visibleTokens.filter(item => item.y * Constants.CellHeight >= this.scrollPosition);
-		this.visibleTokens.push(...visibleTokens);
-		this.tilemap.push(...tilemap);
+		this.tilemap.addLine(visibleTokens);
+		this.player.updateTilemap();
 
-		this.player.setTilemap(this.tilemap);
-		this.drawTokens();
+		this.removeTopLineIfHidden();
+		this.drawTokenLine(visibleTokens, this.lineIndex);
 	}
 
 	scroll() {
-		const mapEnd = this.tilemap.length * Constants.CellHeight - window.innerHeight;
+		const mapEnd = this.tilemap.lines.length * Constants.CellHeight - window.innerHeight;
 
 		if (this.scrollPosition > mapEnd) {
 			return;
-		}
-
-		if (mapEnd - this.scrollPosition < window.innerHeight) {
-			this.integrateNextCodeChunk();
 		}
 
 		const playerY = this.player.y * Constants.CellHeight;
@@ -113,6 +120,10 @@ export default class Game {
 		if (playerY < this.scrollPosition || playerY >= screenEnd) {
 			this.restartOnNextFrame = true;
 			return;
+		}
+
+		if (mapEnd - this.scrollPosition < window.innerHeight) {
+			this.integrateNextCodeLine();
 		}
 
 		this.setScrollPosition(this.scrollPosition + this.scrollSpeed);
@@ -125,13 +136,20 @@ export default class Game {
 		container.scrollTop = this.scrollPosition;
 	}
 
-	drawTokens() {
-		// const now = new Date();
+	removeTopLineIfHidden() {
+		const topLine = document.querySelector(".token-line");
+		const lineIndex = parseInt(topLine.getAttribute("data-line-index"), 10);
 
-		const tokensContainer = document.querySelector(".tokens-container");
+		if (this.scrollPosition > (lineIndex + 1) * Constants.CellHeight) {
+			const tokensContainer = document.querySelector(".tokens-container");
+			tokensContainer.removeChild(topLine);
+		}
+	}
 
+	drawTokenLine(visibleTokens, lineIndex) {
 		let str = "";
-		this.visibleTokens.forEach((item) => {
+
+		visibleTokens.forEach((item) => {
 			str += `
 				<div
 					class="token ${item.token.type || ''}"
@@ -141,8 +159,12 @@ export default class Game {
 			`;
 		});
 
-		tokensContainer.innerHTML = str;
+		const tokenLine = document.createElement("div");
+		tokenLine.className = "token-line";
+		tokenLine.innerHTML = str;
+		tokenLine.setAttribute("data-line-index", lineIndex);
 
-		// console.log(new Date() - now);
+		const tokensContainer = document.querySelector(".tokens-container");
+		tokensContainer.appendChild(tokenLine);
 	}
 }
