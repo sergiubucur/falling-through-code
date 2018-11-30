@@ -12,11 +12,13 @@ export default class CodeFilePicker extends Component {
 			languages: this.getLanguages(),
 			errorText: null,
 			url: "",
+			file: "",
 			selectedLanguage: "js",
 			visible: false
 		};
 
 		this.inputRef = React.createRef();
+		this.inputFileRef = React.createRef();
 	}
 
 	componentDidMount() {
@@ -42,10 +44,12 @@ export default class CodeFilePicker extends Component {
 			this.setState({
 				errorText: null,
 				url: "",
+				file: "",
 				selectedLanguage: "js",
 				visible: true
 			}, () => {
 				this.inputRef.current.focus();
+				this.inputFileRef.current.value = "";
 			});
 
 			return;
@@ -53,15 +57,25 @@ export default class CodeFilePicker extends Component {
 	}
 
 	handleGoClick = () => {
-		const { url, selectedLanguage } = this.state;
+		const { url, file, selectedLanguage } = this.state;
 
-		if (this.state.url === "") {
+		if (url === "" && file === "") {
 			this.setState({
-				errorText: "URL field is empty."
+				errorText: "No file selected."
 			});
 
 			return;
 		};
+
+		if (file) {
+			window.sessionStorage.ftcLoadFromFile = JSON.stringify({
+				file,
+				language: selectedLanguage
+			});
+
+			window.location.reload();
+			return;
+		}
 
 		window.sessionStorage.ftcLoadFromUrl = JSON.stringify({
 			url,
@@ -83,6 +97,26 @@ export default class CodeFilePicker extends Component {
 		});
 	}
 
+	handleFileChange = (e) => {
+		if (!e.target.files.length) {
+			this.setState({
+				file: ""
+			});
+
+			return;
+		}
+
+		var reader = new FileReader();
+
+		reader.onload = () => {
+			this.setState({
+				file: reader.result
+			});
+		}
+
+		reader.readAsText(e.target.files[0], "utf-8");
+	}
+
 	handleLanguageChange = (e) => {
 		this.setState({
 			selectedLanguage: e.target.value
@@ -90,7 +124,7 @@ export default class CodeFilePicker extends Component {
 	}
 
 	render() {
-		const { url, selectedLanguage, errorText, visible } = this.state;
+		const { url, file, selectedLanguage, errorText, visible } = this.state;
 
 		if (!visible) {
 			return null;
@@ -105,10 +139,19 @@ export default class CodeFilePicker extends Component {
 				<div className="form">
 					<div className="row">
 						<div className="field">
-							URL
+							URL to source file
 						</div>
 						<div className="value">
-							<input type="text" ref={this.inputRef} value={url} onChange={this.handleUrlChange} />
+							<input type="text" ref={this.inputRef} value={url} onChange={this.handleUrlChange} disabled={file} />
+						</div>
+					</div>
+
+					<div className="row">
+						<div className="field">
+							Or choose local source file
+						</div>
+						<div className="value">
+							<input type="file" ref={this.inputFileRef} onChange={this.handleFileChange} />
 						</div>
 					</div>
 

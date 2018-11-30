@@ -9,7 +9,9 @@ export default class InfoDisplay extends Component {
 	}
 
 	handleSampleClick = () => {
+		window.sessionStorage.removeItem("ftcLoadFromFile");
 		window.sessionStorage.removeItem("ftcLoadFromUrl");
+
 		window.location.reload();
 	}
 
@@ -19,8 +21,8 @@ export default class InfoDisplay extends Component {
 				<i className="fa fa-arrow-circle-left" /><i className="fa fa-arrow-circle-right" /> Move<br />
 				<i className="fa fa-arrow-circle-up" /> Jump<br /><br />
 
-				<span className="action" onClick={this.handleOpenClick}>Open code file</span><br />
-				<span className="action" onClick={this.handleSampleClick}>Load sample file</span><br /><br />
+				<span className="action" onClick={this.handleOpenClick}>Load level from file</span><br />
+				<span className="action" onClick={this.handleSampleClick}>Load sample level</span><br /><br />
 
 				<span className="credits">
 					-------------<br/>

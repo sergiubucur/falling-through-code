@@ -24,14 +24,21 @@ if (!window.sessionStorage.ftcClickedToStart) {
 }
 
 function run() {
-	if (window.sessionStorage.ftcLoadFromUrl) {
-		const data = JSON.parse(window.sessionStorage.ftcLoadFromUrl);
+	if (window.sessionStorage.ftcLoadFromFile) {
+		const data = JSON.parse(window.sessionStorage.ftcLoadFromFile);
 
-		getCode(data.url, (code) => {
-			initGame(code, data.language);
-		});
-	} else {
-		initGame();
+		initGame(data.file, data.language);
+	}
+	else {
+		if (window.sessionStorage.ftcLoadFromUrl) {
+			const data = JSON.parse(window.sessionStorage.ftcLoadFromUrl);
+
+			getCode(data.url, (code) => {
+				initGame(code, data.language);
+			});
+		} else {
+			initGame();
+		}
 	}
 }
 

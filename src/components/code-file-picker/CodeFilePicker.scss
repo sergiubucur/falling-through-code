@@ -8,7 +8,7 @@ $active-color: #1D1D1D;
 	right: 10px;
 	bottom: 10px;
 	width: 400px;
-	height: 275px;
+	height: 352px;
 	background: #2d2d2d;
 	border: 5px solid #1E1E1E;
 	color: #fff;
@@ -27,7 +27,7 @@ $active-color: #1D1D1D;
 	.form {
 		padding: 20px;
 
-		input, select {
+		input[type=text], select {
 			border: 1px solid $border-color;
 			background: $background-color;
 			color: #fff;
@@ -36,14 +36,26 @@ $active-color: #1D1D1D;
 			font-size: 18px;
 			font-family: monospace;
 			width: 100%;
+
+			&:disabled {
+				background: $border-color;
+				cursor: not-allowed;
+			}
+		}
+
+		input[type=file] {
+			height: 30px;
+			font-size: 18px;
+			font-family: monospace;
+			width: 100%;
 		}
 
 		.row {
+			margin-top: 20px;
+
 			.field {
 				padding-bottom: 5px;
 			}
-
-			margin-top: 20px;
 		}
 	}
 
