@@ -4,14 +4,35 @@ import SampleCode from "./data/SampleCode";
 import Languages from "./common/Languages";
 import Game from "./Game";
 
-if (window.sessionStorage.ftcLoadFromUrl) {
-	const data = JSON.parse(window.sessionStorage.ftcLoadFromUrl);
+if (!window.sessionStorage.ftcClickedToStart) {
+	const div = document.createElement("div");
+	div.className = "click-to-start";
+	div.innerHTML = "Click to start";
 
-	getCode(data.url, (code) => {
-		initGame(code, data.language);
+	const root = document.querySelector("#root");
+	root.style.display = "flex";
+	root.style.justifyContent = "center";
+	root.style.alignItems = "center";
+	root.appendChild(div);
+
+	root.addEventListener("click", () => {
+		window.sessionStorage.ftcClickedToStart = 1;
+		window.location.reload();
 	});
 } else {
-	initGame();
+	run();
+}
+
+function run() {
+	if (window.sessionStorage.ftcLoadFromUrl) {
+		const data = JSON.parse(window.sessionStorage.ftcLoadFromUrl);
+
+		getCode(data.url, (code) => {
+			initGame(code, data.language);
+		});
+	} else {
+		initGame();
+	}
 }
 
 function initGame(code = SampleCode, language = Languages.JavaScript) {
